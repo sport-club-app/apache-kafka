@@ -1,0 +1,7 @@
+apiVersion: v1
+name: nifi
+version: v1.0
+description: app para gerenciamento de eventos
+maintainers: 
+  - name: Pablo Ruan
+    email: pablords@gmail.com

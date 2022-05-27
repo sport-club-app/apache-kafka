@@ -1,0 +1,50 @@
+
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+  labels:
+    app: kafka
+spec:
+  serviceName: kafka-hs
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+        - name: kafka-container
+          image: bitnami/kafka:3.1
+          ports:
+          - containerPort: 9092
+          - containerPort: 9093
+            name: server
+          command:
+          - sh
+          - -c
+          - "exec kafka-server-start.sh /opt/bitnami/kafka/config/server.properties \
+            --override listener.security.protocol.map=INTERNAL_PLAINTEXT:PLAINTEXT,EXTERNAL_PLAINTEXT:PLAINTEXT \
+            --override broker.id=${HOSTNAME##*-} \
+            --override default.replication.factor=3 \
+            --override min.insync.replicas=2 \
+            --override advertised.listeners=INTERNAL_PLAINTEXT://:9092,EXTERNAL_PLAINTEXT://:9093 \
+            --override listeners=INTERNAL_PLAINTEXT://:9092,EXTERNAL_PLAINTEXT://:9093 \
+            --override inter.broker.listener.name=INTERNAL_PLAINTEXT \
+            --override zookeeper.connect=zookeeper-svc"
+          volumeMounts:
+            - name: kafka-pvc
+              mountPath: /bitnami/kafka"
+  volumeClaimTemplates:
+    - metadata:
+        name: kafka-pvc
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "1Gi"

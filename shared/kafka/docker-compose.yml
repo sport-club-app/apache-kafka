@@ -1,0 +1,91 @@
+version: '3'
+
+services:
+
+  nifi:
+    image: apache/nifi:1.10.0
+    container_name: nifi
+    restart: unless-stopped
+    networks:
+      - services
+    ports:
+      - 8080:8080/tcp
+      - 8081:8081/tcp
+      - 8443:8443/tcp
+      - 10000:10000/tcp
+      - 8000:8000/tcp
+    volumes:
+      # mkdir /var/lib/nifi && chown -R 1000:1000 /var/lib/nifi
+      - ./nifi-data/lib/nifi/database_repository:/opt/nifi/nifi-current/database_repository
+      - ./nifi-data/lib/nifi/flowfile_repository:/opt/nifi/nifi-current/flowfile_repository
+      - ./nifi-data/lib/nifi/content_repository:/opt/nifi/nifi-current/content_repository
+      - ./nifi-data/lib/nifi/provenance_repository:/opt/nifi/nifi-current/provenance_repository
+      - ./nifi-data/lib/nifi/state:/opt/nifi/nifi-current/state
+      - ./nifi-data/lib/nifi/logs:/opt/nifi/nifi-current/logs
+    environment:
+      NIFI_WEB_HTTP_HOST: '0.0.0.0'
+      NIFI_WEB_HTTP_PORT: 8080
+
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.0.1
+    container_name: zookeeper
+    networks:
+      - services
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+
+  kafka:
+    image: confluentinc/cp-kafka:7.0.1
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    networks:
+      - services
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_LOG4J_LOGGERS: "kafka.authorizer.logger=INFO"
+      KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
+
+  
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: kafdrop
+    networks:
+      - services
+    depends_on:
+      - broker
+    ports:
+      - 29000:9000
+    environment:
+      KAFKA_BROKERCONNECT: kafka:29092
+
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    networks:
+      - services
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: admin
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+
+
+networks:
+  services:
+    driver: 'bridge'
+    

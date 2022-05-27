@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kafka-pv0
+  namespace: kafka
+  labels:
+    app: kafka
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  claimRef:
+    namespace: kafka
+    name: kafka-pvc-kafka-0
+  hostPath:
+    path: "/home/vagrant/kafka/pv0"
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kafka-pv1
+  namespace: kafka
+  labels:
+    app: kafka
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  claimRef:
+    namespace: kafka
+    name: kafka-pvc-kafka-1
+  hostPath:
+    path: "/home/vagrant/kafka/pv1"
+
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kafka-pv2
+  namespace: kafka
+  labels:
+    app: kafka
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  claimRef:
+    namespace: kafka
+    name: kafka-pvc-kafka-2
+  hostPath:
+    path: "/home/vagrant/kafka/pv2"
+
+
+---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: zookeeper-pv0
+#   namespace: kafka
+#   labels:
+#     app: zookeeper
+# spec:
+#   storageClassName: manual
+#   capacity:
+#     storage: 10Gi
+#   accessModes:
+#     - ReadWriteOnce
+#   persistentVolumeReclaimPolicy: Recycle
+#   claimRef:
+#     namespace: kafka
+#     name: zookeeper-pvc-zookeeper-0
+#   hostPath:
+#     path: "/home/vagrant/zookeeper/pv0"
+
+
+

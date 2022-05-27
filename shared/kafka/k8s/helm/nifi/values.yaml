@@ -1,0 +1,90 @@
+image:
+  repository: apache/nifi
+  tag: 1.10.0
+  imagePullPolicy: IfNotPresent
+
+replicas: 1
+
+
+metadata:
+  name: nifi
+  namespace: nifi
+  labels:
+    app: nifi
+
+service:
+  name: nifi
+  http:
+    type: ClusterIP
+    port: 8082
+    targetPort: 8080
+    nodePort: 30001
+    name: nifi-http
+    protocol: TCP
+    selector:
+      app: nifi
+  https:
+    type: ClusterIP
+    port: 8443
+    targetPort: 8443
+    nodePort: 30002
+    name: nifi-https
+    protocol: TCP
+  socket:
+    type: ClusterIP
+    port: 10000
+    targetPort: 10000
+    nodePort: 30003
+    name: nifi-socket
+    protocol: TCP
+  jvm:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+    nodePort: 30004
+    name: nifi-jvm
+    protocol: TCP
+  
+
+volumeMounts:
+  name: nifi-vol
+  mountPath: /var/nifi-data
+
+volumes:
+  name: nifi-vol
+  persistentVolumeClaim:
+    claimName: nifi-pvc
+  securityContext:
+    fsGroup: 1000
+    runAsUser: 0
+
+persistentVolume:
+  name: nifi-pv
+  annotations: "urgrugr"
+  labels:
+    type: local
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes: ReadWriteOnce
+  hostPath:
+    path: "/home/vagrant/nifi/data"
+
+
+persistentVolumeClaim:
+  name: nifi-pvc
+  storageClassName: manual
+  accessModes: ReadWriteOnce
+  storage: 6Gi
+
+
+ingress:
+  ingressClassName: nginx
+  host: dev.nifi.com.br
+  path: /
+  pathType: Prefix
+  backend:
+    service:
+      name: nifi
+      port:
+        number: 8082

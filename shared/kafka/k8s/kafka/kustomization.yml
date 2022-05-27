@@ -1,0 +1,7 @@
+resources:
+  - namespace.yml
+  #- ing.yml
+  - svc.yml
+  - pv.yml
+  - zookeeper.yml
+  - kafka.yml

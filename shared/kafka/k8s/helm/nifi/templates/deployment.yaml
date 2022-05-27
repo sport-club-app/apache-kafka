@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.metadata.name }}
+  namespace: {{ .Values.metadata.namespace }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.metadata.labels.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.metadata.labels.app }}
+    spec:
+      containers:
+        - name: {{ .Values.metadata.name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          ports:
+            - name: {{ .Values.service.http.name }}
+              containerPort:  {{ .Values.service.http.port }}
+              protocol: {{ .Values.service.http.protocol }}
+            - name: {{ .Values.service.https.name }}
+              containerPort:  {{ .Values.service.https.port }}
+              protocol: {{ .Values.service.https.protocol }}
+            - name: {{ .Values.service.socket.name }}
+              containerPort:  {{ .Values.service.socket.port }}
+              protocol: {{ .Values.service.socket.protocol }}
+            - name: {{ .Values.service.jvm.name }}
+              containerPort:  {{ .Values.service.jvm.port }}
+              protocol: {{ .Values.service.jvm.protocol }}
+          volumeMounts:
+            - name: {{ .Values.volumeMounts.name }}
+              mountPath: {{ .Values.volumeMounts.mountPath }}
+      volumes:
+        - name: {{ .Values.volumes.name }}
+          emptyDir: {}
+    

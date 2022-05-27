@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  namespace: {{ .Values.metadata.namespace }}
+spec:
+  type: {{ .Values.service.http.type }}
+  ports:
+    - port: {{ .Values.service.http.port }}
+      targetPort: {{ .Values.service.http.targetPort }}
+      {{ if eq .Values.service.http.type "NodePort" }}
+      nodePort: {{ .Values.service.http.nodePort }}
+      protocol: {{ .Values.service.http.protocol }}
+      name: {{ .Values.service.http.name }}
+      {{ end }}
+  selector:
+    app: {{ .Values.service.http.selector.app }}
+
+
+---
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: {{ .Release.Name }}
+#   namespace: {{ .Values.metadata.namespace }}
+# spec:
+#   type: {{ .Values.service.https.type }}
+#   ports:
+#     - port: {{ .Values.service.https.port }}
+#       targetPort: {{ .Values.service.https.targetPort }}
+#       {{ if eq .Values.service.https.type "NodePort" }}
+#       nodePort: {{ .Values.service.https.nodePort }}
+#       protocol: {{ .Values.service.https.protocol }}
+#       name: {{ .Values.service.https.name }}
+#       {{ end }}
+#   selector:
+#     app: {{ .Release.Name }}
+#     release: {{ .Release.Name }}
+
+# ---
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: {{ .Release.Name }}
+#   namespace: {{ .Values.metadata.namespace }}
+# spec:
+#   type: {{ .Values.service.socket.type }}
+#   ports:
+#     - port: {{ .Values.service.socket.port }}
+#       targetPort: {{ .Values.service.socket.targetPort }}
+#       {{ if eq .Values.service.socket.type "NodePort" }}
+#       nodePort: {{ .Values.service.socket.nodePort }}
+#       protocol: {{ .Values.service.socket.protocol }}
+#       name: {{ .Values.service.socket.name }}
+#       {{ end }}
+#   selector:
+#     app: {{ .Release.Name }}
+#     release: {{ .Release.Name }}
+
+# ---
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: {{ .Release.Name }}
+#   namespace: {{ .Release.Name }}
+# spec:
+#   type: {{ .Values.service.jvm.type }}
+#   ports:
+#     - port: {{ .Values.service.jvm.port }}
+#       targetPort: {{ .Values.service.jvm.targetPort }}
+#       {{ if eq .Values.service.jvm.type "NodePort" }}
+#       nodePort: {{ .Values.service.jvm.nodePort }}
+#       protocol: {{ .Values.service.jvm.protocol }}
+#       name: {{ .Values.service.jvm.name }}
+#       {{ end }}
+#   selector:
+#     app: {{ .Release.Name }}
+#     release: {{ .Release.Name }}
